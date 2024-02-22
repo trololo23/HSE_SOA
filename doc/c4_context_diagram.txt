@@ -1,0 +1,15 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/latest/C4_Context.puml
+
+Person(user, "User", "An individual user of the task tracking system.")
+System(taskTrackerSystem, "Task Tracker System", "This is system enables users to control their tasks.")
+
+System_Ext(statisticsService, "Statistics Service", "Assists in the monitoring of task likes and views.")
+System_Ext(commentService, "Comment Service", "Enables the management of task comments.")
+System_Ext(broker, "Message Broker", "Responsible for handling event messaging for task likes and views.")
+
+Rel(user, taskTrackerSystem, "Makes use of")
+Rel(taskTrackerSystem, statisticsService, "Interacts with")
+Rel(taskTrackerSystem, commentService, "Controls comments via")
+Rel(taskTrackerSystem, broker, "Transfers events to")
+@enduml
