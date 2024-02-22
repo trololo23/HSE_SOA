@@ -1,0 +1,34 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/latest/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "User", "A user of the task tracker system.")
+Container(authService, "Authorization Service", "gRPC", "Handles user registration and authentication.")
+ContainerDb(userDatabase, "User Database", "PostgreSQL", "Stores user credentials.")
+
+Container(taskTrackerApi, "Task Tracker API", "REST API", "Provides endpoints for user interaction with tasks")
+
+Container(commentService, "Comment Service", "gRPC", "Manages comments and likes for tasks.")
+ContainerDb(commentDatabase, "Comment Database", "PostgreSQL", "Stores comments data.")
+
+Container(statisticsService, "Statistics Service", "gRPC", "Processes and stores task statistics.")
+ContainerDb(statisticsDatabase, "Statistics Database", "ClickHouse", "Stores statistics data.")
+
+Container(broker, "Message Broker", "RabbitMQ", "Handles messaging between services.")
+
+Rel(user, authService, "Authenticates via")
+Rel(authService, userDatabase, "Reads/Writes")
+
+Rel(user, taskTrackerApi, "Uses")
+Rel(taskTrackerApi, commentService, "Manages comments via")
+Rel(taskTrackerApi, statisticsService, "Queries stats")
+
+Rel(commentService, commentDatabase, "Reads/Writes")
+Rel(statisticsService, statisticsDatabase, "Reads/Writes")
+
+Rel_U(taskTrackerApi, broker, "Sends user events to", "AMQP")
+Rel_U(commentService, broker, "Sends/receives comment events to/from", "AMQP")
+Rel_U(statisticsService, broker, "Receives stats events from", "AMQP")
+
+@enduml
